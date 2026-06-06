@@ -12,6 +12,7 @@ use Illuminate\View\View;
 
 class ServiceController extends Controller
 {
+    // Lista los servicios del panel de administración
     public function index(Request $request): View
     {
         $search = $request->string('q')->toString();
@@ -46,6 +47,7 @@ class ServiceController extends Controller
         ]);
     }
 
+    // Muestra el formulario de edición de un servicio
     public function edit(Service $service): View
     {
         return view('admin.services.edit', [
@@ -55,6 +57,7 @@ class ServiceController extends Controller
         ]);
     }
 
+    // Muestra el formulario de creación de un servicio
     public function create(): View
     {
         return view('admin.services.create', [
@@ -67,6 +70,7 @@ class ServiceController extends Controller
         ]);
     }
 
+    // Guarda un servicio nuevo
     public function store(Request $request): RedirectResponse
     {
         $validated = $this->validatedServiceData($request);
@@ -78,6 +82,7 @@ class ServiceController extends Controller
             ->with('status', 'service-created');
     }
 
+    // Actualiza los datos de un servicio
     public function update(Request $request, Service $service): RedirectResponse
     {
         $validated = $this->validatedServiceData($request, $service);
@@ -89,6 +94,7 @@ class ServiceController extends Controller
             ->with('status', 'service-updated');
     }
 
+    // Valida y prepara los datos de un servicio antes de guardarlo
     private function validatedServiceData(Request $request, ?Service $service = null): array
     {
         $validated = $request->validate([
@@ -114,11 +120,13 @@ class ServiceController extends Controller
         return $validated;
     }
 
+    // Devuelve los ámbitos permitidos para un servicio
     private function scopes(): array
     {
         return ['hotel', 'room_type', 'both'];
     }
 
+    // Devuelve las categorías existentes de servicios
     private function categories()
     {
         return Service::query()

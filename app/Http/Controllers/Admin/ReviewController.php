@@ -11,6 +11,7 @@ use Illuminate\View\View;
 
 class ReviewController extends Controller
 {
+    // Lista las reseñas del panel de administración
     public function index(Request $request): View
     {
         $search = $request->string('q')->toString();
@@ -49,6 +50,7 @@ class ReviewController extends Controller
         ]);
     }
 
+    // Muestra el formulario de edición de una reseña
     public function edit(Review $review): View
     {
         return view('admin.reviews.edit', [
@@ -57,6 +59,7 @@ class ReviewController extends Controller
         ]);
     }
 
+    // Actualiza el estado de una reseña
     public function update(Request $request, Review $review): RedirectResponse
     {
         $validated = $request->validate([
@@ -70,6 +73,7 @@ class ReviewController extends Controller
             ->with('status', 'review-updated');
     }
 
+    // Devuelve los hoteles para los desplegables de filtros
     private function hotels()
     {
         return Hotel::query()
@@ -77,6 +81,7 @@ class ReviewController extends Controller
             ->get(['id', 'name']);
     }
 
+    // Devuelve los estados permitidos para una reseña
     private function statuses(): array
     {
         return ['pending', 'published', 'hidden'];

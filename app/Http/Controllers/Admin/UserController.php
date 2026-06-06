@@ -12,6 +12,7 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
+    // Lista los usuarios del panel de administración
     public function index(Request $request): View
     {
         $search = $request->string('q')->toString();
@@ -46,6 +47,7 @@ class UserController extends Controller
         ]);
     }
 
+    // Muestra el formulario de edición de un usuario
     public function edit(User $user): View
     {
         $this->ensureManageable($user);
@@ -57,6 +59,7 @@ class UserController extends Controller
         ]);
     }
 
+    // Actualiza los datos de un usuario
     public function update(Request $request, User $user): RedirectResponse
     {
         $this->ensureManageable($user);
@@ -87,11 +90,13 @@ class UserController extends Controller
             ->with('status', 'user-updated');
     }
 
+    // Devuelve los estados permitidos para un usuario
     private function statuses(): array
     {
         return ['active', 'inactive', 'suspended'];
     }
 
+    // Devuelve los roles que un administrador puede asignar
     private function assignableRoles()
     {
         return Role::query()
@@ -100,6 +105,7 @@ class UserController extends Controller
             ->get();
     }
 
+    // Devuelve los identificadores de los roles asignables
     private function assignableRoleIds(): array
     {
         return $this->assignableRoles()
@@ -107,6 +113,7 @@ class UserController extends Controller
             ->all();
     }
 
+    // Impide gestionar usuarios administradores desde el panel
     private function ensureManageable(User $user): void
     {
         if ($user->loadMissing('role')->role?->name === 'admin') {

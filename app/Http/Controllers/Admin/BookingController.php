@@ -12,13 +12,10 @@ use Illuminate\View\View;
 
 class BookingController extends Controller
 {
-    private readonly BookingService $bookings;
+    // Inicializa el servicio de reservas
+    public function __construct(private readonly BookingService $bookings) {}
 
-    public function __construct(BookingService $bookings)
-    {
-        $this->bookings = $bookings;
-    }
-
+    // Lista las reservas del panel de administración
     public function index(Request $request): View
     {
         $search = $request->string('q')->toString();
@@ -62,6 +59,7 @@ class BookingController extends Controller
         ]);
     }
 
+    // Muestra el detalle de una reserva
     public function show(Booking $booking): View
     {
         return view('admin.bookings.show', [
@@ -71,6 +69,7 @@ class BookingController extends Controller
         ]);
     }
 
+    // Cambia el estado de una reserva
     public function updateStatus(Request $request, Booking $booking): RedirectResponse
     {
         $validated = $request->validate([
@@ -84,6 +83,7 @@ class BookingController extends Controller
             ->with('status', 'booking-updated');
     }
 
+    // Registra un pago manual sobre una reserva
     public function storePayment(Request $request, Booking $booking): RedirectResponse
     {
         $validated = $request->validate([
@@ -99,6 +99,7 @@ class BookingController extends Controller
             ->with('status', 'payment-created');
     }
 
+    // Devuelve los hoteles para los desplegables de filtros
     private function hotels()
     {
         return Hotel::query()
@@ -106,11 +107,13 @@ class BookingController extends Controller
             ->get(['id', 'name']);
     }
 
+    // Devuelve los estados permitidos para una reserva
     private function statuses(): array
     {
         return ['pending', 'confirmed', 'cancelled', 'completed'];
     }
 
+    // Devuelve los estados de pago permitidos
     private function paymentStatuses(): array
     {
         return ['pending', 'paid', 'failed', 'refunded'];

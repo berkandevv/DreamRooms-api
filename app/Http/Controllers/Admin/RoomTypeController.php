@@ -12,6 +12,7 @@ use Illuminate\View\View;
 
 class RoomTypeController extends Controller
 {
+    // Lista los tipos de habitación del panel de administración
     public function index(Request $request): View
     {
         $search = $request->string('q')->toString();
@@ -45,6 +46,7 @@ class RoomTypeController extends Controller
         ]);
     }
 
+    // Muestra el formulario de edición de un tipo de habitación
     public function edit(RoomType $roomType): View
     {
         return view('admin.room-types.edit', [
@@ -54,6 +56,7 @@ class RoomTypeController extends Controller
         ]);
     }
 
+    // Actualiza los datos de un tipo de habitación
     public function update(Request $request, RoomType $roomType): RedirectResponse
     {
         $validated = $request->validate([
@@ -79,6 +82,7 @@ class RoomTypeController extends Controller
             ->with('status', 'room-type-updated');
     }
 
+    // Evita bajar las unidades totales por debajo de la disponibilidad ya creada
     private function validateTotalUnits(RoomType $roomType, int $totalUnits): void
     {
         $maxAvailableUnits = (int) $roomType->availability()->max('available_units');
@@ -90,6 +94,7 @@ class RoomTypeController extends Controller
         }
     }
 
+    // Devuelve los hoteles para los desplegables de filtros
     private function hotels()
     {
         return Hotel::query()
@@ -97,6 +102,7 @@ class RoomTypeController extends Controller
             ->get(['id', 'name']);
     }
 
+    // Devuelve los estados permitidos para un tipo de habitación
     private function statuses(): array
     {
         return ['active', 'inactive'];

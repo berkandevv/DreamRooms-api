@@ -13,6 +13,7 @@ use Illuminate\View\View;
 
 class AvailabilityController extends Controller
 {
+    // Lista la disponibilidad del panel de administración
     public function index(Request $request): View
     {
         $hotelId = $request->string('hotel_id', 'all')->toString();
@@ -46,6 +47,7 @@ class AvailabilityController extends Controller
         ]);
     }
 
+    // Muestra el formulario de edición de una fecha de disponibilidad
     public function edit(RoomTypeAvailability $availability): View
     {
         return view('admin.availability.edit', [
@@ -54,6 +56,7 @@ class AvailabilityController extends Controller
         ]);
     }
 
+    // Actualiza una fecha de disponibilidad
     public function update(Request $request, RoomTypeAvailability $availability): RedirectResponse
     {
         $validated = $request->validate([
@@ -78,6 +81,7 @@ class AvailabilityController extends Controller
             ->with('status', 'availability-updated');
     }
 
+    // Devuelve los hoteles para los desplegables de filtros
     private function hotels()
     {
         return Hotel::query()
@@ -85,6 +89,7 @@ class AvailabilityController extends Controller
             ->get(['id', 'name']);
     }
 
+    // Devuelve los tipos de habitación para los desplegables de filtros
     private function roomTypes()
     {
         return RoomType::query()
@@ -93,6 +98,7 @@ class AvailabilityController extends Controller
             ->get(['id', 'hotel_id', 'name']);
     }
 
+    // Devuelve los estados permitidos para una fecha de disponibilidad
     private function statuses(): array
     {
         return ['open', 'closed'];
