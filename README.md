@@ -1,4 +1,4 @@
-# DreamRooms API
+# Dream Rooms API
 
 API Laravel para catálogo de hoteles, reservas, favoritos, autenticación y gestión de propietario.
 
