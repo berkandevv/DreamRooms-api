@@ -177,7 +177,7 @@ class CustomerBookingController extends Controller
         return $availability;
     }
 
-    // Crea el registro principal de la reserva con importes y datos snapshot
+    // Crea el registro de la reserva con una copia de nombres e importes del momento de compra
     private function createBookingRecord(
         array $validated,
         RoomType $roomType,
@@ -187,16 +187,36 @@ class CustomerBookingController extends Controller
         $amounts = $this->availabilityService->calculateAmounts($availability, $roomType, $stayData['units_booked']);
         $user = $this->findRegisteredCustomer($validated['user_id']);
 
-        return $this->persistBooking(
-            $validated,
-            $roomType,
-            $user,
-            $stayData['check_in'],
-            $stayData['check_out'],
-            $stayData['nights'],
-            $stayData['children_count'],
-            $amounts,
-        );
+        return Booking::query()->create([
+            'booking_reference' => $this->generateBookingReference(),
+            'user_id' => $user->id,
+            'hotel_id' => $roomType->hotel_id,
+            'room_type_id' => $roomType->id,
+            'hotel_name' => $roomType->hotel->name,
+            'room_type_name' => $roomType->name,
+            'customer_name' => $validated['customer_name'],
+            'customer_email' => $validated['customer_email'],
+            'customer_phone' => $validated['customer_phone'] ?? null,
+            'check_in' => $stayData['check_in']->toDateString(),
+            'check_out' => $stayData['check_out']->toDateString(),
+            'nights' => $stayData['nights'],
+            'adults_count' => $validated['adults_count'],
+            'children_count' => $stayData['children_count'],
+            'units_booked' => $validated['units_booked'] ?? 1,
+            'status' => $validated['payment_method'] === 'card' ? 'confirmed' : 'pending',
+            'payment_method' => $validated['payment_method'],
+            'payment_status' => $validated['payment_method'] === 'card' ? 'paid' : 'pending',
+            'subtotal_amount' => $amounts['subtotal'],
+            'taxes_amount' => $amounts['taxes'],
+            'discount_amount' => $amounts['discount'],
+            'total_amount' => $amounts['total'],
+            'currency' => 'EUR',
+            'booked_at' => now(),
+            'expires_at' => $validated['payment_method'] === 'card' ? null : now()->addMinutes(30),
+            'confirmed_at' => $validated['payment_method'] === 'card' ? now() : null,
+            'cancellation_deadline_at' => $this->cancellationDeadline($roomType, $stayData['check_in']),
+            'notes' => $validated['notes'] ?? null,
+        ]);
     }
 
     // Crea una única reseña para reservas completadas
@@ -284,49 +304,6 @@ class CustomerBookingController extends Controller
 
         throw ValidationException::withMessages([
             'user_id' => ['The selected customer is not active.'],
-        ]);
-    }
-
-    // Guarda la reserva con una copia de nombres e importes en el momento de compra
-    private function persistBooking(
-        array $validated,
-        RoomType $roomType,
-        User $user,
-        CarbonImmutable $checkIn,
-        CarbonImmutable $checkOut,
-        int $nights,
-        int $childrenCount,
-        array $amounts,
-    ): Booking {
-        return Booking::query()->create([
-            'booking_reference' => $this->generateBookingReference(),
-            'user_id' => $user->id,
-            'hotel_id' => $roomType->hotel_id,
-            'room_type_id' => $roomType->id,
-            'hotel_name' => $roomType->hotel->name,
-            'room_type_name' => $roomType->name,
-            'customer_name' => $validated['customer_name'],
-            'customer_email' => $validated['customer_email'],
-            'customer_phone' => $validated['customer_phone'] ?? null,
-            'check_in' => $checkIn->toDateString(),
-            'check_out' => $checkOut->toDateString(),
-            'nights' => $nights,
-            'adults_count' => $validated['adults_count'],
-            'children_count' => $childrenCount,
-            'units_booked' => $validated['units_booked'] ?? 1,
-            'status' => $validated['payment_method'] === 'card' ? 'confirmed' : 'pending',
-            'payment_method' => $validated['payment_method'],
-            'payment_status' => $validated['payment_method'] === 'card' ? 'paid' : 'pending',
-            'subtotal_amount' => $amounts['subtotal'],
-            'taxes_amount' => $amounts['taxes'],
-            'discount_amount' => $amounts['discount'],
-            'total_amount' => $amounts['total'],
-            'currency' => 'EUR',
-            'booked_at' => now(),
-            'expires_at' => $validated['payment_method'] === 'card' ? null : now()->addMinutes(30),
-            'confirmed_at' => $validated['payment_method'] === 'card' ? now() : null,
-            'cancellation_deadline_at' => $this->cancellationDeadline($roomType, $checkIn),
-            'notes' => $validated['notes'] ?? null,
         ]);
     }
 

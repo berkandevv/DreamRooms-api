@@ -90,7 +90,7 @@ class HotelController extends Controller
         $validated['smoking_allowed'] = $request->boolean('smoking_allowed');
 
         if ($validated['name'] !== $hotel->name) {
-            $validated['slug'] = $this->generateUniqueSlug($validated['name'], $hotel->id);
+            $validated['slug'] = $this->hotelSlugs->generate($validated['name'], $hotel->id);
         }
 
         $hotel->update($validated);
@@ -123,11 +123,5 @@ class HotelController extends Controller
     private function statuses(): array
     {
         return ['draft', 'published', 'inactive'];
-    }
-
-    // Genera un slug único para un hotel
-    private function generateUniqueSlug(string $name, ?int $ignoreHotelId = null): string
-    {
-        return $this->hotelSlugs->generate($name, $ignoreHotelId);
     }
 }
