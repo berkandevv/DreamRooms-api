@@ -100,7 +100,7 @@ class OwnerHotelController extends Controller
         $payload = $this->hotelPayload($validated, $hotel);
 
         if (isset($validated['name']) && $validated['name'] !== $hotel->name) {
-            $payload['slug'] = $this->generateUniqueSlug($validated['name'], $hotel->id);
+            $payload['slug'] = $this->hotelSlugs->generate($validated['name'], $hotel->id);
         }
 
         $hotel->update($payload);
@@ -114,7 +114,7 @@ class OwnerHotelController extends Controller
     // Añade una imagen a un hotel del propietario
     public function images(Request $request, int $hotelId): HotelResource
     {
-        $validated = $request->validate($this->imageRules());
+        $validated = $request->validate($this->images->validationRules());
         $ownerUserId = $request->user()->id;
 
         $hotel = Hotel::query()
@@ -161,14 +161,8 @@ class OwnerHotelController extends Controller
                     ->where('is_active', true)
                     ->whereIn('scope', ['hotel', 'both'])),
             ],
-            ...$this->imageRules(),
+            ...$this->images->validationRules(),
         ];
-    }
-
-    // Devuelve las reglas de validación de imágenes
-    private function imageRules(): array
-    {
-        return $this->images->validationRules();
     }
 
     // Sincroniza los servicios asignados al hotel
@@ -231,15 +225,9 @@ class OwnerHotelController extends Controller
         ])->filter(fn ($value) => $value !== null)->all();
 
         if (! $hotel) {
-            $payload['slug'] = $this->generateUniqueSlug($validated['name']);
+            $payload['slug'] = $this->hotelSlugs->generate($validated['name']);
         }
 
         return $payload;
-    }
-
-    // Genera un slug único para el hotel
-    private function generateUniqueSlug(string $name, ?int $ignoreHotelId = null): string
-    {
-        return $this->hotelSlugs->generate($name, $ignoreHotelId);
     }
 }

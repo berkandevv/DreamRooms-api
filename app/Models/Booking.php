@@ -45,6 +45,7 @@ class Booking extends Model
         'notes',
     ];
 
+    // Define la conversión de tipos de los atributos
     protected function casts(): array
     {
         return [
@@ -68,31 +69,37 @@ class Booking extends Model
         return $query->whereHas('hotel', fn ($hotelQuery) => $hotelQuery->ownedBy($ownerUserId));
     }
 
+    // Devuelve el cliente que hizo la reserva
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    // Devuelve el hotel de la reserva
     public function hotel(): BelongsTo
     {
         return $this->belongsTo(Hotel::class);
     }
 
+    // Devuelve el tipo de habitación de la reserva
     public function roomType(): BelongsTo
     {
         return $this->belongsTo(RoomType::class);
     }
 
+    // Devuelve los huéspedes de la reserva
     public function guests(): HasMany
     {
         return $this->hasMany(BookingGuest::class);
     }
 
+    // Devuelve los pagos de la reserva
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
     }
 
+    // Devuelve la reseña de la reserva
     public function review(): HasOne
     {
         return $this->hasOne(Review::class);

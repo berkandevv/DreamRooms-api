@@ -9,12 +9,8 @@ use Illuminate\Http\Request;
 
 class OwnerBookingController extends Controller
 {
-    private readonly BookingService $bookings;
-
-    public function __construct(BookingService $bookings)
-    {
-        $this->bookings = $bookings;
-    }
+    // Inicializa el servicio de reservas
+    public function __construct(private readonly BookingService $bookings) {}
 
     // Lista las reservas de los hoteles del propietario autenticado
     public function index(Request $request)

@@ -128,6 +128,7 @@ class HotelResource extends JsonResource
         ];
     }
 
+    // Devuelve el símbolo de la moneda cuando es la moneda por defecto
     private function currencySymbol(?string $currency): ?string
     {
         return $currency === self::DEFAULT_PRICE_CURRENCY ? self::PRICE_CURRENCY_SYMBOL : null;

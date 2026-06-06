@@ -141,7 +141,7 @@ class CustomerBookingController extends Controller
     // Orquesta la creación completa de la reserva y sus datos asociados
     private function createBooking(array $validated): Booking
     {
-        $stayData = $this->buildStayData($validated);
+        $stayData = $this->availabilityService->buildStayData($validated);
 
         $roomType = $this->findBookableRoomType($validated['room_type_id']);
         $this->validateOccupancy(
@@ -161,16 +161,11 @@ class CustomerBookingController extends Controller
         return $booking;
     }
 
-    // Prepara los datos derivados de fechas y ocupación antes de reservar
-    private function buildStayData(array $validated): array
-    {
-        return $this->availabilityService->buildStayData($validated);
-    }
-
     // Bloquea y valida la disponibilidad necesaria para la estancia solicitada
     private function resolveBookingAvailability(RoomType $roomType, array $stayData): Collection
     {
-        $availability = $this->lockAvailability($roomType, $stayData['stay_dates']);
+        // Bloquea la disponibilidad para evitar dobles reservas simultáneas
+        $availability = $this->availabilityService->availabilityForStay($roomType, $stayData['stay_dates'], lock: true);
 
         $this->availabilityService->validateAvailability(
             $availability,
@@ -189,7 +184,7 @@ class CustomerBookingController extends Controller
         array $stayData,
         Collection $availability,
     ): Booking {
-        $amounts = $this->calculateAmounts($availability, $roomType, $stayData['units_booked']);
+        $amounts = $this->availabilityService->calculateAmounts($availability, $roomType, $stayData['units_booked']);
         $user = $this->findRegisteredCustomer($validated['user_id']);
 
         return $this->persistBooking(
@@ -274,18 +269,6 @@ class CustomerBookingController extends Controller
         throw ValidationException::withMessages([
             'guests' => ['The number of guests cannot exceed adults_count plus children_count.'],
         ]);
-    }
-
-    // Bloquea la disponibilidad para evitar dobles reservas simultáneas
-    private function lockAvailability(RoomType $roomType, array $stayDates): Collection
-    {
-        return $this->availabilityService->availabilityForStay($roomType, $stayDates, lock: true);
-    }
-
-    // Calcula los importes finales a partir del precio diario de la estancia
-    private function calculateAmounts(Collection $availability, RoomType $roomType, int $unitsBooked): array
-    {
-        return $this->availabilityService->calculateAmounts($availability, $roomType, $unitsBooked);
     }
 
     // Busca un cliente activo antes de completar la reserva

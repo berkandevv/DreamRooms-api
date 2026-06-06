@@ -207,7 +207,7 @@ class OwnerRoomTypeController extends Controller
     // Sube imágenes a un tipo de habitación del propietario autenticado
     public function images(Request $request, int $roomTypeId): RoomTypeResource
     {
-        $validated = $request->validate($this->imageRules());
+        $validated = $request->validate($this->images->validationRules());
         $ownerUserId = $request->user()->id;
 
         $roomType = RoomType::query()
@@ -246,14 +246,8 @@ class OwnerRoomTypeController extends Controller
                     ->where('is_active', true)
                     ->whereIn('scope', ['room_type', 'both'])),
             ],
-            ...$this->imageRules(),
+            ...$this->images->validationRules(),
         ];
-    }
-
-    // Devuelve las reglas de validación de imágenes
-    private function imageRules(): array
-    {
-        return $this->images->validationRules();
     }
 
     // Sincroniza los servicios asignados al tipo de habitación

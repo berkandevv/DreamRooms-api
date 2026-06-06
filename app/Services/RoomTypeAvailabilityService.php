@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 
 class RoomTypeAvailabilityService
 {
+    // Prepara los datos de la estancia a partir de las fechas recibidas
     public function buildStayData(array $validated): array
     {
         $checkIn = CarbonImmutable::parse($validated['check_in']);
@@ -24,6 +25,7 @@ class RoomTypeAvailabilityService
         ];
     }
 
+    // Devuelve la lista de noches entre la entrada y la salida
     public function buildStayDates(CarbonImmutable $checkIn, CarbonImmutable $checkOut): array
     {
         $stayDates = [];
@@ -35,6 +37,7 @@ class RoomTypeAvailabilityService
         return $stayDates;
     }
 
+    // Obtiene la disponibilidad guardada para las noches de la estancia
     public function availabilityForStay(RoomType $roomType, array $stayDates, bool $lock = false): Collection
     {
         $query = $roomType->availability()
@@ -50,6 +53,7 @@ class RoomTypeAvailabilityService
             ->keyBy(fn ($day) => $day->date->toDateString());
     }
 
+    // Comprueba que hay disponibilidad para todas las noches solicitadas
     public function validateAvailability(Collection $availability, array $stayDates, int $nights, int $unitsBooked): void
     {
         if ($availability->count() !== $nights) {
@@ -75,6 +79,7 @@ class RoomTypeAvailabilityService
         }
     }
 
+    // Calcula el presupuesto y la disponibilidad de una estancia
     public function quoteStay(RoomType $roomType, array $stayData): array
     {
         $availability = $this->availabilityForStay($roomType, $stayData['stay_dates']);
@@ -109,6 +114,7 @@ class RoomTypeAvailabilityService
         ];
     }
 
+    // Calcula el subtotal, los impuestos, el descuento y el total de la estancia
     public function calculateAmounts(Collection $availability, RoomType $roomType, int $unitsBooked): array
     {
         $subtotal = $availability->sum(fn ($day) => (float) $day->price) * $unitsBooked;
@@ -123,6 +129,7 @@ class RoomTypeAvailabilityService
         ];
     }
 
+    // Detalla los problemas de disponibilidad encontrados en cada noche
     private function availabilityIssues(Collection $availability, array $stayDates, int $nights, int $unitsBooked): array
     {
         $missingDates = [];
@@ -172,6 +179,7 @@ class RoomTypeAvailabilityService
         ];
     }
 
+    // Resume las unidades disponibles para la estancia completa
     private function inventorySummary(
         Collection $availability,
         RoomType $roomType,

@@ -30,7 +30,7 @@ class AuthController extends Controller
 
         $accountType = $validated['account_type'] ?? 'customer';
 
-        // Solo permite alta pública de roles API no administrativos.
+        // Solo permite alta pública de roles API no administrativos
         $user = User::query()->create([
             'role_id' => Role::query()->firstOrCreate(['name' => $accountType])->id,
             'name' => $validated['name'],
@@ -160,9 +160,7 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Reject a sensitive action when the current password is incorrect.
-     */
+    // Lanza un error de validación cuando la contraseña actual no es correcta
     private function ensureCurrentPasswordIsValid(User $user, string $password): void
     {
         if (! Hash::check($password, $user->password)) {

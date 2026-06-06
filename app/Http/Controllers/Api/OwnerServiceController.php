@@ -9,6 +9,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class OwnerServiceController extends Controller
 {
+    // Lista los servicios activos que el propietario puede asignar
     public function index(Request $request): AnonymousResourceCollection
     {
         $validated = $request->validate([

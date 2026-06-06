@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureUserRole
 {
+    // Permite el paso solo a usuarios activos con uno de los roles indicados
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         $user = $request->user();
