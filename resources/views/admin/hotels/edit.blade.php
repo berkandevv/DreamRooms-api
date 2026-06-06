@@ -35,6 +35,10 @@
                 </form>
             </div>
 
+            <div class="bg-white/90 border border-sky-100 shadow-sm sm:rounded-2xl p-6">
+                @include('admin.partials.photo-gallery', ['images' => $hotel->images, 'title' => 'Hotel photos'])
+            </div>
+
             @include('admin.partials.confirm-dialog')
         </div>
     </div>

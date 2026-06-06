@@ -50,7 +50,10 @@ class RoomTypeController extends Controller
     public function edit(RoomType $roomType): View
     {
         return view('admin.room-types.edit', [
-            'roomType' => $roomType->load('hotel:id,name'),
+            'roomType' => $roomType->load([
+                'hotel:id,name',
+                'images' => fn ($query) => $query->orderByDesc('is_cover')->orderBy('sort_order'),
+            ]),
             'hotels' => $this->hotels(),
             'statuses' => $this->statuses(),
         ]);

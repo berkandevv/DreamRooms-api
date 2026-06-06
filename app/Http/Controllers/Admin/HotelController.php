@@ -53,7 +53,10 @@ class HotelController extends Controller
     public function edit(Hotel $hotel): View
     {
         return view('admin.hotels.edit', [
-            'hotel' => $hotel->load('owner:id,name,email'),
+            'hotel' => $hotel->load([
+                'owner:id,name,email',
+                'images' => fn ($query) => $query->orderByDesc('is_cover')->orderBy('sort_order'),
+            ]),
             'owners' => $this->owners(),
             'statuses' => $this->statuses(),
         ]);

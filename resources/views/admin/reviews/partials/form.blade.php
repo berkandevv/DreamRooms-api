@@ -37,8 +37,8 @@
 <div>
     <x-input-label value="Photo" />
     @if ($review->image_url)
-        <a href="{{ $review->image_url }}" target="_blank" class="mt-1 block">
-            <img src="{{ $review->image_url }}" alt="Review photo" class="max-h-64 rounded-md border border-gray-200 object-contain">
+        <a href="{{ $review->image_url }}" target="_blank" rel="noopener" class="mt-2 inline-block">
+            <img src="{{ $review->image_url }}" alt="Review photo" class="h-28 w-40 rounded-md border border-gray-200 object-cover">
         </a>
     @else
         <div class="mt-1 text-sm text-slate-500">No photo</div>
