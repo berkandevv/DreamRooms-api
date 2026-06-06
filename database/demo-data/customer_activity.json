@@ -168,7 +168,6 @@
       "status": "pending",
       "payment_status": "pending",
       "booked_at": "2026-05-20 12:30:00",
-      "expires_at": "2026-05-20 13:00:00",
       "guests": [
         {
           "full_name": "Javier Martín Santos",
@@ -384,7 +383,6 @@
       "status": "pending",
       "payment_status": "pending",
       "booked_at": "2026-05-23 17:40:00",
-      "expires_at": "2026-05-23 18:10:00",
       "customer_name": "Pablo Sánchez León",
       "customer_email": "cliente09@dreamrooms.test",
       "customer_phone": "+34669999000",

@@ -102,7 +102,6 @@ class CustomerBookingController extends Controller
         ]);
         $validated['user_id'] = $request->user()->id;
         $this->validateGuestsLimit($validated);
-        $this->bookings->expirePendingBookings();
 
         $booking = DB::transaction(fn (): Booking => $this->createBooking($validated));
 
@@ -216,7 +215,6 @@ class CustomerBookingController extends Controller
             'total_amount' => $amounts['total'],
             'currency' => 'EUR',
             'booked_at' => now(),
-            'expires_at' => $validated['payment_method'] === 'card' ? null : now()->addMinutes(30),
             'confirmed_at' => $validated['payment_method'] === 'card' ? now() : null,
             'cancellation_deadline_at' => $this->cancellationDeadline($roomType, $stayData['check_in']),
             'notes' => $validated['notes'] ?? null,

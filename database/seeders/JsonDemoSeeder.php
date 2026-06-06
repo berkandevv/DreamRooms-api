@@ -304,7 +304,6 @@ class JsonDemoSeeder extends Seeder
                 'total_amount' => round($subtotal + $taxes - $discount, 2),
                 'currency' => $roomType->currency,
                 'booked_at' => $bookingData['booked_at'],
-                'expires_at' => $bookingData['expires_at'] ?? null,
                 'confirmed_at' => $bookingData['confirmed_at'] ?? null,
                 'cancelled_at' => $bookingData['cancelled_at'] ?? null,
                 'cancellation_deadline_at' => $bookingData['cancellation_deadline_at'] ?? null,

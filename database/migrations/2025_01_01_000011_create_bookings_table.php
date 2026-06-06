@@ -38,7 +38,6 @@ return new class extends Migration
             $table->decimal('total_amount', 10, 2);
             $table->char('currency', 3)->default('EUR');
             $table->dateTime('booked_at');
-            $table->dateTime('expires_at')->nullable();
             $table->dateTime('confirmed_at')->nullable();
             $table->dateTime('cancelled_at')->nullable();
             $table->dateTime('cancellation_deadline_at')->nullable();

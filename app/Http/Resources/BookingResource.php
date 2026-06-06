@@ -95,7 +95,6 @@ class BookingResource extends JsonResource
             ] : null),
             'notes' => $this->notes,
             'booked_at' => $this->booked_at?->toISOString(),
-            'expires_at' => $this->expires_at?->toISOString(),
             'confirmed_at' => $this->confirmed_at?->toISOString(),
             'cancelled_at' => $this->cancelled_at?->toISOString(),
             'cancellation' => [

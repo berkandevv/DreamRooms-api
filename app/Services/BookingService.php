@@ -33,27 +33,6 @@ class BookingService
         });
     }
 
-    // Cancela las reservas pendientes que han caducado
-    public function expirePendingBookings(): void
-    {
-        Booking::query()
-            ->where('status', 'pending')
-            ->whereNotNull('expires_at')
-            ->where('expires_at', '<=', now())
-            ->pluck('id')
-            ->each(fn (int $bookingId) => DB::transaction(function () use ($bookingId): void {
-                $booking = Booking::query()
-                    ->lockForUpdate()
-                    ->find($bookingId);
-
-                if (! $booking || $booking->status !== 'pending') {
-                    return;
-                }
-
-                $this->cancelLockedBooking($booking);
-            }));
-    }
-
     // Cambia el estado de una reserva
     public function changeStatus(int $bookingId, string $newStatus, ?int $ownerUserId = null): Booking
     {
@@ -62,12 +41,6 @@ class BookingService
 
             if ($booking->status === $newStatus) {
                 return $booking;
-            }
-
-            if ($newStatus === 'confirmed' && $booking->status === 'pending' && $booking->expires_at !== null && $booking->expires_at->isPast()) {
-                throw ValidationException::withMessages([
-                    'status' => ['This booking has expired and cannot be confirmed.'],
-                ]);
             }
 
             if ($newStatus === 'completed' && $booking->payment_status !== 'paid') {
@@ -110,12 +83,6 @@ class BookingService
             if ($booking->status === 'cancelled' && $paymentStatus !== 'refunded') {
                 throw ValidationException::withMessages([
                     'amount' => ['Cancelled bookings can only receive refunded payments.'],
-                ]);
-            }
-
-            if ($booking->status === 'pending' && $booking->expires_at !== null && $booking->expires_at->isPast()) {
-                throw ValidationException::withMessages([
-                    'amount' => ['This booking has expired and cannot receive payments.'],
                 ]);
             }
 
