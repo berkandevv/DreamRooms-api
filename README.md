@@ -315,14 +315,13 @@ Si se cancela, restaura unidades en la disponibilidad diaria.
 
 Crea una reseña para una reserva completada del cliente autenticado.
 
-Body:
+Admite una foto opcional, por lo que se envía como `multipart/form-data`:
 
-```json
-{
-  "rating": 5,
-  "comment": "Muy buena estancia"
-}
-```
+- `rating` (1-5, obligatorio)
+- `comment` (opcional)
+- `image` (opcional, una sola imagen)
+
+La reseña y su foto quedan en estado `pending` hasta que un administrador las revise desde el panel web; solo entonces aparecen en la página pública del hotel.
 
 Solo se permite una reseña por reserva.
 
