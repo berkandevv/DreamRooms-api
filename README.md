@@ -2,6 +2,92 @@
 
 API Laravel para catálogo de hoteles, reservas, favoritos, autenticación y gestión de propietario.
 
+El proyecto está hecho con Laravel 13, PHP 8.3 y Laravel Sanctum, con un panel
+de administración web (Laravel Breeze) y assets compilados con Vite.
+
+> La forma recomendada de levantar todo el entorno (API, panel y frontend React)
+> es el repositorio principal con Docker. Estas instrucciones son para arrancar
+> **solo la API a mano**, sin Docker, clonando este repositorio por separado.
+
+## Requisitos
+
+- PHP 8.3 con las extensiones habituales de Laravel (`pdo_mysql`, `mbstring`, `bcmath`, `exif`, `pcntl`)
+- Composer
+- MySQL 8
+- Node.js y npm (para compilar los assets del panel de administración)
+
+## Instalación
+
+Instala las dependencias de PHP y de Node:
+
+```bash
+composer install
+npm install
+```
+
+## Configuración del entorno
+
+Crea el archivo `.env` a partir del ejemplo y genera la clave de la aplicación:
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+El `.env.example` viene preparado para Docker (`DB_HOST=database`). Para un
+arranque manual, ajusta la conexión a tu MySQL local, por ejemplo:
+
+```dotenv
+APP_URL=http://localhost:8000
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=dreamrooms
+DB_USERNAME=dreamrooms
+DB_PASSWORD=dreamrooms
+```
+
+Crea esa base de datos y el usuario en MySQL antes de continuar.
+
+## Base de datos y datos demo
+
+Ejecuta las migraciones con los datos de prueba y enlaza el almacenamiento
+público (necesario para servir las fotos de reseñas y hoteles):
+
+```bash
+php artisan migrate --seed
+php artisan storage:link
+```
+
+> La sesión y la cola usan el driver `database`, así que sus tablas se crean
+> con las propias migraciones; no hace falta configurar nada más.
+
+Los seeders crean los usuarios de prueba descritos en [Usuarios de prueba](#usuarios-de-prueba).
+
+## Ejecutar en desarrollo
+
+Compila los assets del panel de administración y arranca el servidor:
+
+```bash
+npm run build          # assets del panel admin (o `npm run dev` para recompilar en caliente)
+php artisan serve
+```
+
+La API y el panel quedan disponibles en:
+
+```txt
+http://localhost:8000
+```
+
+Si necesitas procesar trabajos en cola (por ejemplo, correos), arranca también:
+
+```bash
+php artisan queue:work
+```
+
+> El frontend React es un proyecto aparte y espera la API en
+> `http://localhost:8000/api` (configurable en su `src/config/api.js`).
+
 ## Autenticación
 
 La API usa tokens Bearer con Laravel Sanctum.
