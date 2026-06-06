@@ -57,7 +57,7 @@ class CustomerBookingController extends Controller
         return BookingResource::make($booking);
     }
 
-    // Crea una reseña pública para una reserva completada
+    // Crea una reseña pendiente de revisión para una reserva completada
     public function review(Request $request, int $bookingId)
     {
         $validated = $request->validate([
@@ -240,12 +240,13 @@ class CustomerBookingController extends Controller
             ]);
         }
 
+        // La reseña queda pendiente hasta que el administrador de la web la revise
         return $booking->review()->create([
             'hotel_id' => $booking->hotel_id,
             'user_id' => $booking->user_id,
             'rating' => $validated['rating'],
             'comment' => $validated['comment'] ?? null,
-            'status' => 'published',
+            'status' => 'pending',
         ]);
     }
 
