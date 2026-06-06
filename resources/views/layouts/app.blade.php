@@ -35,5 +35,30 @@
                 {{ $slot }}
             </main>
         </div>
+
+        <!-- Lightbox compartido para ver las fotos del panel -->
+        <div
+            x-data="{ open: false, url: '', alt: '' }"
+            x-on:open-lightbox.window="url = $event.detail.url; alt = $event.detail.alt; open = true"
+            x-on:keydown.escape.window="open = false"
+            x-show="open"
+            x-cloak
+            x-transition.opacity
+            @click="open = false"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+        >
+            <button
+                type="button"
+                @click="open = false"
+                class="absolute right-5 top-4 text-4xl leading-none font-bold text-white/80 transition hover:text-white"
+                aria-label="Close"
+            >&times;</button>
+            <img
+                :src="url"
+                :alt="alt"
+                @click.stop
+                class="max-h-[90vh] max-w-[90vw] rounded-lg object-contain shadow-2xl"
+            >
+        </div>
     </body>
 </html>

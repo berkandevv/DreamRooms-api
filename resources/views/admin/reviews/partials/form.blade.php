@@ -37,9 +37,15 @@
 <div>
     <x-input-label value="Photo" />
     @if ($review->image_url)
-        <a href="{{ $review->image_url }}" target="_blank" rel="noopener" class="mt-2 inline-block">
-            <img src="{{ $review->image_url }}" alt="Review photo" class="h-28 w-40 rounded-md border border-gray-200 object-cover">
-        </a>
+        <button
+            type="button"
+            data-url="{{ $review->image_url }}"
+            data-alt="Review photo"
+            x-on:click="$dispatch('open-lightbox', { url: $el.dataset.url, alt: $el.dataset.alt })"
+            class="mt-2 inline-block cursor-pointer"
+        >
+            <img src="{{ $review->image_url }}" alt="Review photo" class="h-28 w-40 rounded-md border border-gray-200 object-cover transition hover:opacity-90">
+        </button>
     @else
         <div class="mt-1 text-sm text-slate-500">No photo</div>
     @endif
