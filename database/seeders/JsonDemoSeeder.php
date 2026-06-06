@@ -403,36 +403,46 @@ class JsonDemoSeeder extends Seeder
             ->all();
     }
 
-    // Reemplaza las imágenes de hotel definidas en JSON
+    // Reemplaza la única foto de hotel definida en JSON
     private function replaceHotelImages(Hotel $hotel, array $images): void
     {
         $hotel->images()->delete();
 
-        foreach ($images as $index => $imageData) {
-            HotelImage::query()->create([
-                'hotel_id' => $hotel->id,
-                'image_url' => $imageData['url'],
-                'alt_text' => $imageData['alt_text'] ?? $hotel->name,
-                'is_cover' => $imageData['is_cover'] ?? $index === 0,
-                'sort_order' => $imageData['sort_order'] ?? $index,
-            ]);
+        // Solo se guarda una foto por hotel
+        $imageData = $images[0] ?? null;
+
+        if ($imageData === null) {
+            return;
         }
+
+        HotelImage::query()->create([
+            'hotel_id' => $hotel->id,
+            'image_url' => $imageData['url'],
+            'alt_text' => $imageData['alt_text'] ?? $hotel->name,
+            'is_cover' => true,
+            'sort_order' => 0,
+        ]);
     }
 
-    // Reemplaza las imágenes de habitación definidas en JSON
+    // Reemplaza la única foto de habitación definida en JSON
     private function replaceRoomTypeImages(RoomType $roomType, array $images): void
     {
         $roomType->images()->delete();
 
-        foreach ($images as $index => $imageData) {
-            RoomTypeImage::query()->create([
-                'room_type_id' => $roomType->id,
-                'image_url' => $imageData['url'],
-                'alt_text' => $imageData['alt_text'] ?? $roomType->name,
-                'is_cover' => $imageData['is_cover'] ?? $index === 0,
-                'sort_order' => $imageData['sort_order'] ?? $index,
-            ]);
+        // Solo se guarda una foto por habitación
+        $imageData = $images[0] ?? null;
+
+        if ($imageData === null) {
+            return;
         }
+
+        RoomTypeImage::query()->create([
+            'room_type_id' => $roomType->id,
+            'image_url' => $imageData['url'],
+            'alt_text' => $imageData['alt_text'] ?? $roomType->name,
+            'is_cover' => true,
+            'sort_order' => 0,
+        ]);
     }
 
     // Lee y valida un archivo JSON de datos demo
