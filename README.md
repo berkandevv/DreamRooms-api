@@ -6,8 +6,9 @@ El proyecto está hecho con Laravel 13, PHP 8.3 y Laravel Sanctum, con un panel
 de administración web (Laravel Breeze) y assets compilados con Vite.
 
 > La forma recomendada de levantar todo el entorno (API, panel y frontend React)
-> es el repositorio principal con Docker. Estas instrucciones son para arrancar
-> **solo la API a mano**, sin Docker, clonando este repositorio por separado.
+> es el [repositorio principal](https://github.com/berkandevv/DreamRooms) con
+> Docker. Estas instrucciones son para arrancar **solo la API a mano**, sin
+> Docker, clonando este repositorio por separado.
 
 ## Requisitos
 
