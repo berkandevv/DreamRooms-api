@@ -33,3 +33,14 @@
         {{ $review->comment ?? '-' }}
     </div>
 </div>
+
+<div>
+    <x-input-label value="Photo" />
+    @if ($review->image_url)
+        <a href="{{ $review->image_url }}" target="_blank" class="mt-1 block">
+            <img src="{{ $review->image_url }}" alt="Review photo" class="max-h-64 rounded-md border border-gray-200 object-contain">
+        </a>
+    @else
+        <div class="mt-1 text-sm text-slate-500">No photo</div>
+    @endif
+</div>

@@ -11,8 +11,10 @@ use App\Services\BookingService;
 use App\Services\RoomTypeAvailabilityService;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -63,6 +65,8 @@ class CustomerBookingController extends Controller
         $validated = $request->validate([
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
             'comment' => ['nullable', 'string'],
+            // El cliente puede adjuntar una sola foto al comentario
+            'image' => ['nullable', 'file', 'image', 'max:5120'],
         ]);
 
         $review = DB::transaction(fn () => $this->createReview($bookingId, $request->user()->id, $validated));
@@ -118,7 +122,7 @@ class CustomerBookingController extends Controller
             'user:id,name,email',
             'hotel:id,name,slug',
             'roomType:id,name',
-            'review:id,booking_id,rating,comment,status',
+            'review:id,booking_id,rating,comment,image_url,status',
         ];
     }
 
@@ -240,14 +244,27 @@ class CustomerBookingController extends Controller
             ]);
         }
 
-        // La reseña queda pendiente hasta que el administrador de la web la revise
+        // La reseña y su foto quedan pendientes hasta que el administrador de la web las revise
         return $booking->review()->create([
             'hotel_id' => $booking->hotel_id,
             'user_id' => $booking->user_id,
             'rating' => $validated['rating'],
             'comment' => $validated['comment'] ?? null,
+            'image_url' => $this->storeReviewImage($booking, $validated['image'] ?? null),
             'status' => 'pending',
         ]);
+    }
+
+    // Guarda la foto del comentario en el almacenamiento público y devuelve su URL
+    private function storeReviewImage(Booking $booking, ?UploadedFile $image): ?string
+    {
+        if (! $image) {
+            return null;
+        }
+
+        $path = $image->store("reviews/{$booking->id}", 'public');
+
+        return Storage::disk('public')->url($path);
     }
 
     // Busca un tipo de habitación activo dentro de un hotel publicado

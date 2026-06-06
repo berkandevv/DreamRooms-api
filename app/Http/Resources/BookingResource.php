@@ -90,6 +90,7 @@ class BookingResource extends JsonResource
                 'id' => $this->review->id,
                 'rating' => $this->review->rating,
                 'comment' => $this->review->comment,
+                'image_url' => $this->review->image_url,
                 'status' => $this->review->status,
             ] : null),
             'notes' => $this->notes,

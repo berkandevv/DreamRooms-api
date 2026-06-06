@@ -16,19 +16,23 @@ class Review extends Model
         'booking_id',
         'rating',
         'comment',
+        'image_url',
         'status',
     ];
 
+    // Devuelve el hotel de la reseña
     public function hotel(): BelongsTo
     {
         return $this->belongsTo(Hotel::class);
     }
 
+    // Devuelve el cliente que escribió la reseña
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    // Devuelve la reserva de la reseña
     public function booking(): BelongsTo
     {
         return $this->belongsTo(Booking::class);

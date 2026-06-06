@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('booking_id')->constrained('bookings')->restrictOnDelete();
             $table->unsignedTinyInteger('rating');
             $table->text('comment')->nullable();
+            $table->string('image_url')->nullable();
             $table->enum('status', ['pending', 'published', 'hidden']);
             $table->timestamps();
             $table->unique('booking_id');
