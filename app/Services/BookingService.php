@@ -23,12 +23,7 @@ class BookingService
                 ->lockForUpdate()
                 ->findOrFail($bookingId);
 
-            if ($booking->cancellation_deadline_at !== null && ! $booking->cancellation_deadline_at->isFuture()) {
-                throw ValidationException::withMessages([
-                    'booking' => ['The free cancellation deadline for this booking has passed.'],
-                ]);
-            }
-
+            // Fuera del plazo gratuito ya no se bloquea: se permite cancelar pero sin reembolso
             return $this->cancelLockedBooking($booking);
         });
     }
@@ -120,6 +115,11 @@ class BookingService
     // Devuelve las unidades reservadas al calendario
     public function restoreAvailability(Booking $booking): void
     {
+        // Las reservas de pago en hotel no descuentan inventario, así que no hay nada que devolver
+        if (! $booking->blocksInventory()) {
+            return;
+        }
+
         $booking->loadMissing('roomType');
 
         $availability = RoomTypeAvailability::query()
@@ -193,12 +193,49 @@ class BookingService
 
         $this->restoreAvailability($booking);
 
+        // Dentro del plazo gratuito se reembolsa lo pagado; fuera de plazo se cobra igualmente
+        $refunded = $booking->isWithinFreeCancellationWindow()
+            && $this->refundBooking($booking);
+
         $booking->forceFill([
             'status' => 'cancelled',
             'cancelled_at' => now(),
+            'payment_status' => $refunded ? 'refunded' : $booking->payment_status,
         ])->save();
 
         return $booking;
+    }
+
+    // Reembolsa el importe cobrado de una reserva y registra el movimiento
+    private function refundBooking(Booking $booking): bool
+    {
+        if ($booking->payment_status !== 'paid') {
+            return false;
+        }
+
+        $paidAmount = round((float) Payment::query()
+            ->where('booking_id', $booking->id)
+            ->where('status', 'paid')
+            ->sum('amount'), 2);
+
+        if ($paidAmount <= 0) {
+            return false;
+        }
+
+        Payment::query()->create([
+            'booking_id' => $booking->id,
+            'provider' => $booking->payment_method === 'card' ? 'card' : 'manual',
+            'amount' => $paidAmount,
+            'currency' => $booking->currency,
+            'status' => 'refunded',
+            'transaction_reference' => 'REFUND-'.$booking->booking_reference,
+            'paid_at' => null,
+            'metadata' => [
+                'reason' => 'customer_cancellation_within_free_window',
+            ],
+        ]);
+
+        return true;
     }
 
     // Actualiza el estado de pago de una reserva

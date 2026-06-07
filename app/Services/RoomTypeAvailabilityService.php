@@ -54,7 +54,8 @@ class RoomTypeAvailabilityService
     }
 
     // Comprueba que hay disponibilidad para todas las noches solicitadas
-    public function validateAvailability(Collection $availability, array $stayDates, int $nights, int $unitsBooked): void
+    // Con $enforceUnits en false se permite overbooking (no se exige cupo libre)
+    public function validateAvailability(Collection $availability, array $stayDates, int $nights, int $unitsBooked, bool $enforceUnits = true): void
     {
         if ($availability->count() !== $nights) {
             throw ValidationException::withMessages([
@@ -65,7 +66,7 @@ class RoomTypeAvailabilityService
         foreach ($stayDates as $stayDate) {
             $day = $availability[$stayDate];
 
-            if ($day->status !== 'open' || $day->available_units < $unitsBooked) {
+            if ($day->status !== 'open' || ($enforceUnits && $day->available_units < $unitsBooked)) {
                 throw ValidationException::withMessages([
                     'check_in' => ['The selected room type is not available for the requested dates.'],
                 ]);

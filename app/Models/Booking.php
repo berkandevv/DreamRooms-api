@@ -103,10 +103,22 @@ class Booking extends Model
         return $this->hasOne(Review::class);
     }
 
-    // Indica si el cliente todavía puede cancelar según la política contratada
+    // Indica si el cliente todavía puede cancelar la reserva (con o sin cargo)
     public function canBeCancelledByCustomer(): bool
     {
-        return ! in_array($this->status, ['cancelled', 'completed'], true)
-            && ($this->cancellation_deadline_at === null || $this->cancellation_deadline_at->isFuture());
+        return ! in_array($this->status, ['cancelled', 'completed'], true);
+    }
+
+    // Indica si la cancelación entra dentro del plazo gratuito con derecho a reembolso
+    public function isWithinFreeCancellationWindow(): bool
+    {
+        return $this->cancellation_deadline_at === null
+            || $this->cancellation_deadline_at->isFuture();
+    }
+
+    // Indica si la reserva descuenta inventario (solo las de tarjeta lo bloquean)
+    public function blocksInventory(): bool
+    {
+        return $this->payment_method === 'card';
     }
 }

@@ -101,6 +101,7 @@ class BookingResource extends JsonResource
                 'deadline_at' => $this->cancellation_deadline_at?->toISOString(),
                 'timezone' => config('app.booking_timezone'),
                 'can_cancel' => $this->canBeCancelledByCustomer(),
+                'is_free' => $this->isWithinFreeCancellationWindow(),
             ],
         ];
     }

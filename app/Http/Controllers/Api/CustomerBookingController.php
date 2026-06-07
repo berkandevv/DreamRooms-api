@@ -154,10 +154,16 @@ class CustomerBookingController extends Controller
             $stayData['units_booked'],
         );
 
-        $availability = $this->resolveBookingAvailability($roomType, $stayData);
+        // Solo las reservas con tarjeta bloquean inventario, el pago en hotel admite overbooking
+        $blocksInventory = $validated['payment_method'] === 'card';
+
+        $availability = $this->resolveBookingAvailability($roomType, $stayData, $blocksInventory);
         $booking = $this->createBookingRecord($validated, $roomType, $stayData, $availability);
 
-        $this->decrementAvailability($availability, $stayData['units_booked']);
+        if ($blocksInventory) {
+            $this->decrementAvailability($availability, $stayData['units_booked']);
+        }
+
         $this->createBookingGuests($booking, $validated);
         $this->createSimulatedCardPayment($booking, $validated);
 
@@ -165,16 +171,17 @@ class CustomerBookingController extends Controller
     }
 
     // Bloquea y valida la disponibilidad necesaria para la estancia solicitada
-    private function resolveBookingAvailability(RoomType $roomType, array $stayData): Collection
+    private function resolveBookingAvailability(RoomType $roomType, array $stayData, bool $enforceUnits): Collection
     {
-        // Bloquea la disponibilidad para evitar dobles reservas simultáneas
-        $availability = $this->availabilityService->availabilityForStay($roomType, $stayData['stay_dates'], lock: true);
+        // Bloquea la disponibilidad para evitar dobles reservas simultáneas cuando se exige cupo
+        $availability = $this->availabilityService->availabilityForStay($roomType, $stayData['stay_dates'], lock: $enforceUnits);
 
         $this->availabilityService->validateAvailability(
             $availability,
             $stayData['stay_dates'],
             $stayData['nights'],
             $stayData['units_booked'],
+            enforceUnits: $enforceUnits,
         );
 
         return $availability;
