@@ -51,6 +51,7 @@
     "room_types": [
       {
         "key": "hotel_01_doble",
+        "free_cancellation_hours": 48,
         "name": "Habitación doble confort",
         "description": "Habitación luminosa con cama doble, baño privado y una distribución pensada para estancias de ocio o trabajo",
         "capacity_adults": 2,
@@ -88,6 +89,7 @@
       },
       {
         "key": "hotel_01_superior",
+        "free_cancellation_hours": 48,
         "name": "Habitación familiar",
         "description": "Habitación amplia para familias o grupos pequeños con equipamiento funcional",
         "capacity_adults": 2,
@@ -127,6 +129,7 @@
       },
       {
         "key": "hotel_01_premium",
+        "free_cancellation_hours": 48,
         "name": "Habitación superior con balcón",
         "description": "Habitación confortable con balcón, más espacio interior y detalles pensados para estancias tranquilas",
         "capacity_adults": 3,
