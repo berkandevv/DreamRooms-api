@@ -197,6 +197,32 @@ Requiere token. Devuelve el usuario autenticado.
 
 Requiere token. Revoca solo el token actual.
 
+## 1.5 `PUT /api/auth/password`
+
+Requiere token. Cambia la contraseña del usuario autenticado. Hay que enviar la contraseña actual y la nueva confirmada (mínimo 8 caracteres).
+
+Body:
+
+```json
+{
+  "current_password": "password",
+  "password": "newpassword123",
+  "password_confirmation": "newpassword123"
+}
+```
+
+## 1.6 `DELETE /api/auth/account`
+
+Requiere token. Desactiva la cuenta del usuario autenticado: mantiene el registro pero lo deja `inactive` (no podrá volver a iniciar sesión) y revoca todos sus tokens. Hay que confirmar con la contraseña actual.
+
+Body:
+
+```json
+{
+  "current_password": "password"
+}
+```
+
 ---
 
 # 2. Catálogo público
@@ -493,6 +519,15 @@ Campos opcionales habituales:
 
 Actualiza un hotel del propietario autenticado.
 
+## 5.6 `POST /api/owner/hotels/{hotelId}/images`
+
+Sube la foto de un hotel del propietario autenticado. Se envía como `multipart/form-data`:
+
+- `image` (archivo de imagen, máximo 5 MB)
+- `alt_text` (opcional, texto alternativo)
+
+Solo se admite una foto por hotel: al subir una nueva se reemplaza la anterior.
+
 ---
 
 # 6. Área de propietario: tipos de habitación
@@ -531,6 +566,15 @@ Devuelve el detalle de un tipo de habitación si pertenece a un hotel del propie
 ## 6.4 `PUT /api/owner/room-types/{roomTypeId}`
 
 Actualiza un tipo de habitación si pertenece a un hotel del propietario autenticado.
+
+## 6.5 `POST /api/owner/room-types/{roomTypeId}/images`
+
+Sube la foto de un tipo de habitación del propietario autenticado. Se envía como `multipart/form-data`:
+
+- `image` (archivo de imagen, máximo 5 MB)
+- `alt_text` (opcional, texto alternativo)
+
+Solo se admite una foto por tipo de habitación: al subir una nueva se reemplaza la anterior.
 
 ---
 
