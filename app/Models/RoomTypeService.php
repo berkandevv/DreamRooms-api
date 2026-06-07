@@ -16,11 +16,13 @@ class RoomTypeService extends Pivot
         'service_id',
     ];
 
+    // Devuelve el tipo de habitación asociado al servicio
     public function roomType(): BelongsTo
     {
         return $this->belongsTo(RoomType::class);
     }
 
+    // Devuelve el servicio asociado al tipo de habitación
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);

@@ -14,6 +14,7 @@ class Role extends Model
         'name',
     ];
 
+    // Devuelve los usuarios que tienen este rol
     public function users(): HasMany
     {
         return $this->hasMany(User::class);

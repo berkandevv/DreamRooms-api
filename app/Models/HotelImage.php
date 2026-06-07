@@ -18,6 +18,7 @@ class HotelImage extends Model
         'sort_order',
     ];
 
+    // Define la conversión de tipos de los atributos
     protected function casts(): array
     {
         return [
@@ -25,6 +26,7 @@ class HotelImage extends Model
         ];
     }
 
+    // Devuelve el hotel al que pertenece la imagen
     public function hotel(): BelongsTo
     {
         return $this->belongsTo(Hotel::class);

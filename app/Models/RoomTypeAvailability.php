@@ -20,6 +20,7 @@ class RoomTypeAvailability extends Model
         'min_stay_nights',
     ];
 
+    // Define la conversión de tipos de los atributos
     protected function casts(): array
     {
         return [
@@ -28,6 +29,7 @@ class RoomTypeAvailability extends Model
         ];
     }
 
+    // Devuelve el tipo de habitación de esta disponibilidad
     public function roomType(): BelongsTo
     {
         return $this->belongsTo(RoomType::class);

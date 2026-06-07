@@ -15,6 +15,7 @@ class RoomTypeImage extends Model
         'sort_order',
     ];
 
+    // Define la conversión de tipos de los atributos
     protected function casts(): array
     {
         return [
@@ -22,6 +23,7 @@ class RoomTypeImage extends Model
         ];
     }
 
+    // Devuelve el tipo de habitación al que pertenece la imagen
     public function roomType(): BelongsTo
     {
         return $this->belongsTo(RoomType::class);

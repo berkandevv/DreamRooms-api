@@ -19,6 +19,7 @@ class Service extends Model
         'is_active',
     ];
 
+    // Define la conversión de tipos de los atributos
     protected function casts(): array
     {
         return [
@@ -26,6 +27,7 @@ class Service extends Model
         ];
     }
 
+    // Devuelve los hoteles que ofrecen el servicio
     public function hotels(): BelongsToMany
     {
         return $this->belongsToMany(Hotel::class, 'hotel_services')
@@ -33,6 +35,7 @@ class Service extends Model
             ->withTimestamps();
     }
 
+    // Devuelve los tipos de habitación que ofrecen el servicio
     public function roomTypes(): BelongsToMany
     {
         return $this->belongsToMany(RoomType::class, 'room_type_services')

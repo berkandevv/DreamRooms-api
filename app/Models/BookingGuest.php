@@ -16,6 +16,7 @@ class BookingGuest extends Model
         'is_primary',
     ];
 
+    // Define la conversión de tipos de los atributos
     protected function casts(): array
     {
         return [
@@ -24,6 +25,7 @@ class BookingGuest extends Model
         ];
     }
 
+    // Devuelve la reserva a la que pertenece el huésped
     public function booking(): BelongsTo
     {
         return $this->belongsTo(Booking::class);

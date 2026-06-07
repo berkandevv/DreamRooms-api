@@ -106,6 +106,7 @@ class BookingResource extends JsonResource
         ];
     }
 
+    // Devuelve el símbolo correspondiente a la moneda de la reserva
     private function currencySymbol(?string $currency): ?string
     {
         if (! is_string($currency)) {

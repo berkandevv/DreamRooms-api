@@ -16,11 +16,13 @@ class HotelService extends Pivot
         'service_id',
     ];
 
+    // Devuelve el hotel asociado al servicio
     public function hotel(): BelongsTo
     {
         return $this->belongsTo(Hotel::class);
     }
 
+    // Devuelve el servicio asociado al hotel
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);

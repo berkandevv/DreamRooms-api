@@ -15,11 +15,13 @@ class Favorite extends Model
         'hotel_id',
     ];
 
+    // Devuelve el usuario propietario del favorito
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    // Devuelve el hotel marcado como favorito
     public function hotel(): BelongsTo
     {
         return $this->belongsTo(Hotel::class);

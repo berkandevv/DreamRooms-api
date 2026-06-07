@@ -18,6 +18,7 @@ class Payment extends Model
         'metadata',
     ];
 
+    // Define la conversión de tipos de los atributos
     protected function casts(): array
     {
         return [
@@ -27,6 +28,7 @@ class Payment extends Model
         ];
     }
 
+    // Devuelve la reserva asociada al pago
     public function booking(): BelongsTo
     {
         return $this->belongsTo(Booking::class);
